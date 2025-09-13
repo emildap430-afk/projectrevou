@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact - Green Leaf Store</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Green Leaf Store</h1>
+      <p>Toko Tanaman Hias Ramah Lingkungan</p>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="products.html">Shop Plants</a></li>
+          <li><a href="contact.html" class="active">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="contact-person">
+      <h2>Contact Us</h2>
+      <p>
+        Jika Anda memiliki pertanyaan atau ingin berdiskusi lebih lanjut,
+        silakan kirim pesan kepada kami:
+      </p>
+
+      <form id="contact-form">
+        <div class="form-group">
+          <label for="name">Nama:</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div class="form-group">
+          <label for="message">Pesan:</label>
+          <textarea id="message" name="message" rows="4" required></textarea>
+        </div>
+        <button type="submit">Kirim Pesan</button>
+      </form>
+    </section>
+
+    <footer>
+      <p>© 2025 Green Leaf Store. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

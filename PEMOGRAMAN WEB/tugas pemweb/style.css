@@ -1,0 +1,91 @@
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #fefefe;
+}
+
+header {
+  background-color: #fff;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #555;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #cce3dc;
+  padding: 40px;
+}
+
+.hero-text h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+.hero-text input {
+  margin-top: 20px;
+  padding: 10px;
+  width: 250px;
+}
+
+.hero-image img {
+  width: 200px;
+  border-radius: 10px;
+}
+
+.best-selling {
+  padding: 40px;
+  text-align: center;
+}
+
+.plant-list {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.plant-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  width: 180px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.plant-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.about-us {
+  background-color: #eef5f2;
+  padding: 40px;
+  text-align: center;
+}
+
+.features {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.features div {
+  max-width: 200px;
+}

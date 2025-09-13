@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daftar Pasien Klinik Sehat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    thead th {
+      background-color: #4e9251;
+      color: white;
+      padding: 12px 10px;
+      text-align: left;
+    }
+    tbody tr:hover {
+      background-color: #d9f2d9;
+    }
+    tbody td {
+      padding: 10px 8px;
+    }
+    .btn-edit, .btn-delete {
+      cursor: pointer;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .btn-edit {
+      color: white;
+      background-color: #71c2f8; 
+    }
+    .btn-edit:hover {
+      background-color: #71c2f8;
+    }
+    .btn-delete {
+      color: white;
+      background-color: #dc2626; 
+      margin-left: 6px;
+    }
+    .btn-delete:hover {
+      background-color: #991b1b;
+    }
+    
+    form > div {
+      margin-bottom: 0.75rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 0.5rem 0.6rem;
+      border: 1.5px solid #ccc;
+      border-radius: 5px;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus, input[type="date"]:focus {
+      border-color: #4caf50;
+      outline: none;
+    }
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      margin-top: 0.3rem;
+    }
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: -0.5rem;
+      margin-bottom: 0.5rem;
+      display: none;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 15px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    h1 {
+      color: #2d6a4f;
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="container">
+    <h1>DAFTAR PASIEN KLINIK SEHAT</h1>
+
+    <table class="w-full border-collapse shadow rounded-lg overflow-hidden bg-white">
+      <thead>
+        <tr>
+          <th class="w-12">No</th>
+          <th>Nama Pasien</th>
+          <th>No. Rekam Medis</th>
+          <th>Tanggal Lahir</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="patientsTableBody">
+      </tbody>
+    </table>
+
+    <form id="patientForm" class="mt-8 bg-white p-6 rounded-lg shadow-md" novalidate>
+      <div>
+        <label for="namaPasien">Nama Lengkap:</label>
+        <input type="text" id="namaPasien" name="namaPasien" />
+        <div id="errorNama" class="error-message">Nama lengkap wajib diisi.</div>
+      </div>
+      <div>
+        <label for="noRekamMedis">No. Rekam Medis:</label>
+        <input type="text" id="noRekamMedis" name="noRekamMedis" />
+        <div id="errorRekam" class="error-message">Nomor rekam medis wajib diisi.</div>
+      </div>
+      <div>
+        <label for="tanggalLahir">Tanggal Lahir:</label>
+        <input type="date" id="tanggalLahir" name="tanggalLahir" />
+        <div id="errorTanggal" class="error-message">Tanggal lahir wajib diisi.</div>
+      </div>
+      <div>
+        <label>Jenis Kelamin:</label>
+        <div class="radio-group" role="radiogroup" aria-labelledby="genderLabel">
+          <label><input type="radio" name="jenisKelamin" value="Laki-Laki" /> Laki-Laki</label>
+          <label><input type="radio" name="jenisKelamin" value="Perempuan" /> Perempuan</label>
+        </div>
+        <div id="errorGender" class="error-message">Jenis kelamin wajib dipilih.</div>
+      </div>
+      <button type="submit" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded font-semibold transition">
+        Simpan
+      </button>
+    </form>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('patientForm');
+
+      const namaInput = document.getElementById('namaPasien');
+      const noRekamMedisInput = document.getElementById('noRekamMedis');
+      const tanggalLahirInput = document.getElementById('tanggalLahir');
+      const jenisKelaminInputs = form.elements['jenisKelamin'];
+
+      const errorNama = document.getElementById('errorNama');
+      const errorRekam = document.getElementById('errorRekam');
+      const errorTanggal = document.getElementById('errorTanggal');
+      const errorGender = document.getElementById('errorGender');
+
+      const patientsTableBody = document.getElementById('patientsTableBody');
+
+      let patients = [];
+      let editingIndex = -1;
+
+      function resetErrors() {
+        errorNama.style.display = 'none';
+        errorRekam.style.display = 'none';
+        errorTanggal.style.display = 'none';
+        errorGender.style.display = 'none';
+      }
+
+      function validateForm() {
+        let valid = true;
+        resetErrors();
+
+        if (!namaInput.value.trim()) {
+          errorNama.style.display = 'block';
+          valid = false;
+        }
+        if (!noRekamMedisInput.value.trim()) {
+          errorRekam.style.display = 'block';
+          valid = false;
+        }
+        if (!tanggalLahirInput.value) {
+          errorTanggal.style.display = 'block';
+          valid = false;
+        }
+        const genderSelected = Array.from(jenisKelaminInputs).some(r => r.checked);
+        if (!genderSelected) {
+          errorGender.style.display = 'block';
+          valid = false;
+        }
+        return valid;
+      }
+
+      function clearForm() {
+        namaInput.value = '';
+        noRekamMedisInput.value = '';
+        tanggalLahirInput.value = '';
+        for (const r of jenisKelaminInputs) r.checked = false;
+        resetErrors();
+        editingIndex = -1;
+      }
+
+      function renderPatients() {
+        patientsTableBody.innerHTML = '';
+        patients.forEach((patient, index) => {
+          const tr = document.createElement('tr');
+          tr.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+
+          const noTd = document.createElement('td');
+          noTd.textContent = index + 1;
+          noTd.className = 'align-middle';
+
+          const namaTd = document.createElement('td');
+          namaTd.textContent = patient.nama;
+
+          const rekamTd = document.createElement('td');
+          rekamTd.textContent = patient.rekamMedis;
+
+          const tanggalTd = document.createElement('td');
+
+          const d = new Date(patient.tanggal);
+          const day = String(d.getDate()).padStart(2, '0');
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          const year = d.getFullYear();
+          tanggalTd.textContent = `${day}/${month}/${year}`;
+
+          const aksiTd = document.createElement('td');
+          aksiTd.className = 'flex items-center';
+
+          const btnEdit = document.createElement('button');
+          btnEdit.className = 'btn-edit';
+          btnEdit.title = 'Edit Data';
+          btnEdit.textContent = 'Edit';
+          btnEdit.addEventListener('click', () => {
+            fillFormForEdit(index);
+          });
+
+          const btnDelete = document.createElement('button');
+          btnDelete.className = 'btn-delete';
+          btnDelete.title = 'Hapus Data';
+          btnDelete.textContent = '×';
+          btnDelete.setAttribute('aria-label', 'Hapus data pasien nomor ' + (index+1));
+          btnDelete.addEventListener('click', () => {
+            if (confirm(`Yakin ingin menghapus data pasien bernama "${patient.nama}"?`)) {
+              patients.splice(index, 1);
+              renderPatients();
+              if (editingIndex === index) clearForm();
+              else if (editingIndex > index) editingIndex--;
+            }
+          });
+
+          aksiTd.appendChild(btnEdit);
+          aksiTd.appendChild(btnDelete);
+
+          tr.appendChild(noTd);
+          tr.appendChild(namaTd);
+          tr.appendChild(rekamTd);
+          tr.appendChild(tanggalTd);
+          tr.appendChild(aksiTd);
+
+          patientsTableBody.appendChild(tr);
+        });
+      }
+
+      function fillFormForEdit(index) {
+        const p = patients[index];
+        namaInput.value = p.nama;
+        noRekamMedisInput.value = p.rekamMedis;
+        tanggalLahirInput.value = p.tanggal;
+        for (const r of jenisKelaminInputs) {
+          r.checked = r.value === p.jenisKelamin;
+        }
+        editingIndex = index;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // On form submit
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+    
+        const patientData = {
+          nama: namaInput.value.trim(),
+          rekamMedis: noRekamMedisInput.value.trim(),
+          tanggal: tanggalLahirInput.value,
+          jenisKelamin: Array.from(jenisKelaminInputs).find(r => r.checked).value
+        };
+
+        if (editingIndex === -1) {
+        
+          patients.push(patientData);
+        } else {
+
+          patients[editingIndex] = patientData;
+        }
+
+        renderPatients();
+        clearForm();
+      });
+
+      patients = [
+        {nama: "Budi Santoso", rekamMedis: "RM-001", tanggal: "1980-02-05", jenisKelamin: "Laki-Laki"},
+        {nama: "Siti Aminah", rekamMedis: "RM-002", tanggal: "1975-08-12", jenisKelamin: "Perempuan"}
+      ];
+      renderPatients();
+    })();
+  </script>
+</body>
+</html>
+
